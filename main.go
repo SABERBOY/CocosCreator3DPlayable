@@ -15,17 +15,22 @@ import (
 )
 
 var (
-	mobileDir  = "E:\\Projects\\CocosProjects\\WebGameDemo\\build\\web-mobile"
-	outDir     = "E:\\Projects\\CocosProjects\\WebGameDemo\\build\\PS"
-	htmlFile   = outDir + ak.PS + "index.html"
-	tmpOutFile = outDir + ak.PS + "/index.html"
+	mobileDir  = "E:\\Projects\\CocosProjects\\WebGameDemo"
+	outDir     = ""
+	htmlFile   = ""
+	tmpOutFile = ""
 )
 
 func main() {
-	build, _ := os.Executable()
-	build = filepath.Dir(build)
+	//build, _ := os.Executable()
+	build := mobileDir
+	//build = filepath.Dir(build)
 	buildPath := flag.String("path", build, "build path")
 	flag.Parse()
+	if !fileutil.PathExists(*buildPath) {
+		fmt.Printf("%s Path Error\n", *buildPath)
+		return
+	}
 	mobileDir = *buildPath + ak.PS + "build/web-mobile"
 	outDir = *buildPath + ak.PS + "build/PS"
 	htmlFile = outDir + ak.PS + "index.html"

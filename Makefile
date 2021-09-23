@@ -4,6 +4,11 @@ GOBUILD = $(GOCMD) build
 GOMOD = $(GOCMD) mod
 GOTEST = $(GOCMD) test
 BINARY_NAME = Cocos3DPlayableAdPlugin
+ifeq ($(OS),Windows_NT)
+    detected_OS := Windows
+else
+    detected_OS := $(shell sh -c 'uname 2>/dev/null || echo Unknown')
+endif
 setup: init-submodules
 	@go get ./...
 
@@ -21,5 +26,7 @@ setup-protobuf-macos:
 run:
 	@go run main.go
 
-runCli:
-	@cd ./bin && .\go_build_c3d2one
+build:
+	@SET CGO_ENABLED=0&&SET GOOS=windows&&SET GOARCH=amd64&&go build -o $(BINARY_NAME).exe main.go
+	@echo $(detected_OS)
+  	@CGO_ENABLED=0&&GOOS=darwin&&GOARCH=amd64&&go build -o $(BINARY_NAME).exe main.go
