@@ -48,3 +48,5 @@ bin### Go template
 *.iml
 out
 gen
+
+*.zip
