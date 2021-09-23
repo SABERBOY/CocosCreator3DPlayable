@@ -22,6 +22,7 @@ func Mix(dir string, html *string) {
 	text := []string{
 		".json",
 		".txt",
+		".ccon",
 	}
 
 	for _, t := range text {

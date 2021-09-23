@@ -36,40 +36,35 @@ System.register([], function (_export, _context) {
             }, 'import', topLevelImport);
         });
 
-        function start(_ref4) {
-            var findCanvas = _ref4.findCanvas;
-            var settings;
-            var cc;
-            return Promise.resolve().then(function () {
-                return topLevelImport('cc');
-            }).then(function (engine) {
-                cc = engine;
-                // regLoading();
-                return regLoading();
-            }).then(function (cc) {
-                return loadSettingsJson(cc);
-            })
-                .then(function () {
-                    settings = window._CCSettings;
-                    return initializeGame(cc, settings, findCanvas).then(function () {
-                        if (settings.scriptPackages) {
-                            const newSP=[];
-                            settings.scriptPackages.forEach((value,index)=>{
-                                newSP.push(value)
-                            })
-                            return loadModulePacks(newSP);
-                        }
-                    }).then(function () {
-                        return loadJsList(settings.jsList);
-                    }).then(function () {
-                        return loadAssetBundle(settings.hasResourcesBundle, settings.hasStartSceneBundle);
-                    }).then(function () {
-                        return cc.game.run(function () {
-                            return onGameStarted(cc, settings);
-                        });
-                    });
-                });
-        }
+    function start(_ref4) {
+      var findCanvas = _ref4.findCanvas;
+      var settings;
+      var cc;
+      return Promise.resolve().then(function () {
+        return topLevelImport('cc');
+      }).then(function (engine) {
+        cc = engine;
+        return loadSettingsJson(cc);
+      }).then(function () {
+        settings = window._CCSettings;
+        return initializeGame(cc, settings, findCanvas).then(function () {
+          if (!settings.renderPipeline) return cc.game.run();
+        }).then(function () {
+          if (settings.scriptPackages) {
+            return loadModulePacks(settings.scriptPackages);
+          }
+        }).then(function () {
+          return loadJsList(settings.jsList);
+        }).then(function () {
+          return loadAssetBundle(settings.hasResourcesBundle, settings.hasStartSceneBundle);
+        }).then(function () {
+          if (settings.renderPipeline) return cc.game.run();
+        }).then(function () {
+          cc.game.onStart = onGameStarted.bind(null, cc, settings);
+          onGameStarted(cc, settings);
+        });
+      });
+    }
 
         function topLevelImport(url) {
             return _context["import"]("".concat(url));
