@@ -21,7 +21,7 @@ function base64DecToArr(sBase64, nBlockSize) {
         nMod4 = nInIdx & 3
         nUint24 |= b64ToUint6(sB64Enc.charCodeAt(nInIdx)) << 18 - 6 * nMod4
         if (nMod4 === 3 || nInLen - nInIdx === 1) {
-            for (nMod3 = 0; nMod3 < 3 && nOutIdx < nOutLen; nMod3++ , nOutIdx++) {
+            for (nMod3 = 0; nMod3 < 3 && nOutIdx < nOutLen; nMod3++, nOutIdx++) {
                 aBytes[nOutIdx] = nUint24 >>> (16 >>> nMod3 & 24) & 255;
             }
             nUint24 = 0
@@ -203,17 +203,6 @@ function regLoading() {
             const downloadAudio = (url, options, onComplete) => {
                 // loadWebAudio(url, onComplete);
                 loadDomAudio(url, onComplete);
-                /*if (formatSupport.length === 0) {
-                    return new Error('Audio Downloader: audio not supported on this browser!');
-                }
-
-                // If WebAudio is not supported, load using DOM mode
-                if (!__audioSupport.WEB_AUDIO) {
-                    loadDomAudio(url, onComplete);
-                }
-                else {
-                    loadWebAudio(url, onComplete);
-                }*/
             }
 
             const downloadText =
@@ -276,25 +265,6 @@ function regLoading() {
                     });
                 }
                 return;
-                // no need to load script again
-                /* if (downloaded[url]) {
-                     if (onComplete) {
-                         onComplete(null);
-                     }
-                     return null;
-                 }
-                 const ps = {}
-                 ps[url.toString()] = "./" + url.toString()
-                 // ps["PS"] = "./"+url.toString()
-                 var importMapJson = {"imports": ps}
-                 console.log("href:", window.location.href)
-                 const importMapAbsUrl = new URL(url, window.location.href).href;
-                 console.log("importMap:", importMapJson)
-                 console.log("importMapAbsUrl:", importMapAbsUrl)
-                 // System.constructor.prototype.patches.setImportMap(importMapJson, importMapAbsUrl);
-                 // System.import(ps[url.toString()])
-                 console.log("INDEX:", getScriptById("assets/main/index.js"))
-                 return eval(getScriptById("assets/main/index.js"));*/
             }
 
             const getFontFamily = (fontHandle) => {
@@ -337,7 +307,7 @@ function regLoading() {
                         onComplete(err);
                         return;
                     }
-                    const cconPreface = parseCCONJson(json);
+                    const cconPreface = cc.internal.parseCCONJson(json)//parseCCONJson(json);
                     const chunkPromises = Promise.all(cconPreface.chunks.map((chunk) => new Promise < Uint8Array > ((resolve, reject) => {
                         downloadArrayBuffer(`${/*path.*/mainFileName(url)}${chunk}`, {}, (errChunk, chunkBuffer) => {
                             if (err) {
@@ -348,7 +318,7 @@ function regLoading() {
                         });
                     })));
                     chunkPromises.then((chunks) => {
-                        const ccon = new CCON(cconPreface.document, chunks);
+                        const ccon = new cc.internal.CCON(cconPreface.document, chunks);
                         onComplete(null, ccon);
                     }).catch((err) => {
                         onComplete(err);
@@ -363,22 +333,13 @@ function regLoading() {
                         return;
                     }
                     try {
-                        const ccon = decodeCCONBinary(new Uint8Array(arrayBuffer));
+                        const ccon = cc.internal.decodeCCONBinary(new Uint8Array(arrayBuffer))//decodeCCONBinary(new Uint8Array(arrayBuffer));
                         onComplete(null, ccon);
                     } catch (err) {
                         onComplete(err);
                     }
                 });
             };
-
-            const parseCCONJson = (json/*: unknown*/) => {
-                const cconPreface = json /*as CCONPreface*/;
-
-                return {
-                    chunks: cconPreface.chunks,
-                    document: cconPreface.document,
-                };
-            }
 
             const mainFileName = (fileName/*: string*/) => {
                 if (fileName) {
@@ -410,75 +371,11 @@ function regLoading() {
                 _chunks/*: Uint8Array[]*/;
             }
 
-            const VERSION = 1;
-
-            const MAGIC = 0x4E4F4343;
-
-            const CHUNK_ALIGN_AS = 8;
-            const decodeCCONBinary = (bytes/*: Uint8Array*/) => {
-                if (bytes.length < 16) {
-                    throw new Error("13102");
-                }
-
-                const dataView = new DataView(
-                    bytes.buffer,
-                    bytes.byteOffset,
-                    bytes.byteLength,
-                );
-
-                const magic = dataView.getUint32(0, true);
-                if (magic !== MAGIC) {
-                    throw new Error("13100");
-                }
-
-                const version = dataView.getUint32(4, true);
-                if (version !== VERSION) {
-                    throw new Error("13101"/*, version*/);
-                }
-
-                const dataByteLength = dataView.getUint32(8, true);
-                if (dataByteLength !== dataView.byteLength) {
-                    throw new Error("13102");
-                }
-
-                let chunksStart = 12;
-
-                const jsonDataLength = dataView.getUint32(chunksStart, true);
-                chunksStart += 4;
-                const jsonData = new Uint8Array(dataView.buffer, chunksStart + dataView.byteOffset, jsonDataLength);
-                chunksStart += jsonDataLength;
-                const jsonString = decodeJson(jsonData);
-                let json/*: unknown*/;
-                try {
-                    json = JSON.parse(jsonString);
-                } catch (err) {
-                    throw new Error(err);
-                }
-
-                const chunks/*: Uint8Array[]*/ = [];
-                while (chunksStart < dataView.byteLength) {
-                    if (chunksStart % CHUNK_ALIGN_AS !== 0) {
-                        const padding = CHUNK_ALIGN_AS - chunksStart % CHUNK_ALIGN_AS;
-                        chunksStart += padding;
-                    }
-                    const chunkDataLength = dataView.getUint32(chunksStart, true);
-                    chunksStart += 4;
-                    chunks.push(new Uint8Array(dataView.buffer, chunksStart + dataView.byteOffset, chunkDataLength));
-                    chunksStart += chunkDataLength;
-                }
-
-                if (chunksStart !== dataView.byteLength) {
-                    throw new Error("13102");
-                }
-
-                return new CCON(json, chunks);
-            }
-
             const decodeJson = (data/*: Uint8Array*/) => {
                 if (typeof TextDecoder !== 'undefined') {
                     return new TextDecoder().decode(data);
                 } else if ('Buffer' in globalThis) {
-                    const {Buffer} = (globalThis/* as unknown as { Buffer: BufferConstructor }*/);
+                    const { Buffer } = (globalThis/* as unknown as { Buffer: BufferConstructor }*/);
                     // eslint-disable-next-line no-buffer-constructor
                     return Buffer.from(data.buffer, data.byteOffset, data.byteLength).toString();
                 } else {

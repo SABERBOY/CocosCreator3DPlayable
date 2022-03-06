@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
 
-    <title>Cocos Creator 3D test | c3d_demo_01</title>
+    <title>Cocos Creator 3D</title>
 
     <!--http://www.html5rocks.com/en/mobile/mobifying/-->
     <meta name="viewport"
@@ -41,8 +41,12 @@
 
 </head>
 <body>
-<canvas id="GameCanvas" oncontextmenu="event.preventDefault()" tabindex="0"></canvas>
-
+<!-- <canvas id="GameCanvas" oncontextmenu="event.preventDefault()" tabindex="0"></canvas> -->
+<div id="GameDiv">
+    <div id="Cocos3dGameContainer">
+      <canvas id="GameCanvas" oncontextmenu="event.preventDefault()" tabindex="0"></canvas>
+    </div>
+  </div>
 <!-- Polyfills bundle. -->
 <script src="src/polyfills.bundle.js" charset="utf-8"></script>
 
@@ -58,24 +62,10 @@
 <!-- new-res-loader.js -->
 <script src="new-res-loader.js" charset="utf-8"></script>
 
-<!--<script type="systemjs-importmap">
-{"imports":{"cc":"./../cocos-js/cc.js","wait-for-ammo-instantiation":"./../cocos-js/wait-for-ammo-instantiation.js"}}
-</script>-->
-
 <script>
-    const importMapUrl = 'src/import-map.json';
-    Promise.resolve(importMapJson).then((importMap) => {
-        // console.log("href:", window.location.href)
-        const importMapAbsUrl = new URL(importMapUrl, window.location.href).href;
-        // console.log("importMap:", importMap)
-        // console.log("importMapAbsUrl:", importMapAbsUrl)
-        System.constructor.prototype.patches.setImportMap(importMap, importMapAbsUrl);
-    }).then(() => {
-        System.import('./index.js')
-    });
-/*    System.import('index.js').catch(function (err) {
+   System.import('index.js').catch(function (err) {
         console.error(err);
-    })*/
+    })
 </script>
 </body>
 </html>

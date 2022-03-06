@@ -2,11 +2,13 @@ package res
 
 import (
 	"fmt"
+	"path"
+	"strings"
+
 	"github.com/Jecced/go-tools/src/ak"
 	"github.com/Jecced/go-tools/src/commutil"
 	"github.com/Jecced/go-tools/src/fileutil"
 	"github.com/Jecced/go-tools/src/strutil"
-	"strings"
 )
 
 var (
@@ -18,7 +20,12 @@ var (
 func Mix(dir string, html *string) {
 	out = dir
 	content = html
-
+	var files = fileutil.FindAllFileTypes(out)
+	var fileNameMap = map[string]string{}
+	for _, t := range files {
+		fileNameMap[path.Ext(t)] = path.Ext(t)
+		fmt.Printf("file EXT:%s\n", t)
+	}
 	text := []string{
 		".json",
 		".txt",
@@ -70,7 +77,7 @@ func dealBinary(file string) {
 	)
 	resp = resp + "\n" + z + ""
 	//os.Remove(file)
-	fmt.Println("删除", file)
+	fmt.Println("find binary res files:", file)
 }
 
 func TextMix(suffix string) {
@@ -94,5 +101,5 @@ func dealText(file string) {
 	)
 	resp = resp + "\n" + z + ""
 	//os.Remove(file)
-	fmt.Println("删除", file)
+	fmt.Println("find text/json files:", file)
 }
