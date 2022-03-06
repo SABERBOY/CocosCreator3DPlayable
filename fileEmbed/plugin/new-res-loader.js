@@ -21,7 +21,7 @@ function base64DecToArr(sBase64, nBlockSize) {
         nMod4 = nInIdx & 3
         nUint24 |= b64ToUint6(sB64Enc.charCodeAt(nInIdx)) << 18 - 6 * nMod4
         if (nMod4 === 3 || nInLen - nInIdx === 1) {
-            for (nMod3 = 0; nMod3 < 3 && nOutIdx < nOutLen; nMod3++ , nOutIdx++) {
+            for (nMod3 = 0; nMod3 < 3 && nOutIdx < nOutLen; nMod3++, nOutIdx++) {
                 aBytes[nOutIdx] = nUint24 >>> (16 >>> nMod3 & 24) & 255;
             }
             nUint24 = 0
@@ -109,10 +109,11 @@ function regLoading() {
                     const arr = base64DecToArr(JSON.stringify(window.res[url]))
                     onComplete(null, arr)
                 };
-/*            var __audioSupport = cc.sys.__audioSupport;
-            console.log("__audioSupport:",cc.sys)
-            var formatSupport = __audioSupport.format;
-            var context = __audioSupport.context;*/
+
+            /*            var __audioSupport = cc.sys.__audioSupport;
+                        console.log("__audioSupport:",cc.sys)
+                        var formatSupport = __audioSupport.format;
+                        var context = __audioSupport.context;*/
 
             function base64toBlob(base64, type) {
                 var bstr = atob(base64, type),
@@ -148,7 +149,7 @@ function regLoading() {
                 } else {
                     dom.src = data;
                 }
-                dom["url"]=dom.src
+                dom["url"] = dom.src
                 var clearEvent = function () {
                     clearTimeout(timer);
                     dom.removeEventListener("canplaythrough", success, false);
@@ -185,7 +186,7 @@ function regLoading() {
 
             const loadWebAudio = (url, onComplete) => {
                 let context = new (window.AudioContext || window.webkitAudioContext);
-                if (!context) onComplete(new Error('Audio Downloader: no web audio context.'),null);
+                if (!context) onComplete(new Error('Audio Downloader: no web audio context.'), null);
                 var data = window.res[url];
                 data = base64toArray(data);
                 if (data) {
@@ -199,20 +200,9 @@ function regLoading() {
                 }
             }
 
-            const downloadAudio=(url, options, onComplete)=> {
+            const downloadAudio = (url, options, onComplete) => {
                 // loadWebAudio(url, onComplete);
                 loadDomAudio(url, onComplete);
-                /*if (formatSupport.length === 0) {
-                    return new Error('Audio Downloader: audio not supported on this browser!');
-                }
-
-                // If WebAudio is not supported, load using DOM mode
-                if (!__audioSupport.WEB_AUDIO) {
-                    loadDomAudio(url, onComplete);
-                }
-                else {
-                    loadWebAudio(url, onComplete);
-                }*/
             }
 
             const downloadText =
@@ -275,25 +265,6 @@ function regLoading() {
                     });
                 }
                 return;
-                // no need to load script again
-                /* if (downloaded[url]) {
-                     if (onComplete) {
-                         onComplete(null);
-                     }
-                     return null;
-                 }
-                 const ps = {}
-                 ps[url.toString()] = "./" + url.toString()
-                 // ps["PS"] = "./"+url.toString()
-                 var importMapJson = {"imports": ps}
-                 console.log("href:", window.location.href)
-                 const importMapAbsUrl = new URL(url, window.location.href).href;
-                 console.log("importMap:", importMapJson)
-                 console.log("importMapAbsUrl:", importMapAbsUrl)
-                 // System.constructor.prototype.patches.setImportMap(importMapJson, importMapAbsUrl);
-                 // System.import(ps[url.toString()])
-                 console.log("INDEX:", getScriptById("assets/main/index.js"))
-                 return eval(getScriptById("assets/main/index.js"));*/
             }
 
             const getFontFamily = (fontHandle) => {
@@ -330,7 +301,87 @@ function regLoading() {
                     onComplete(null, fontFamilyName);
                 });
             }
+            const downloadCCON = (url/*: string*/, options/*: IDownloadParseOptions*/, onComplete/*: CompleteCallback<CCON>*/) => {
+                downloadJson(url, options, (err, json) => {
+                    if (err) {
+                        onComplete(err);
+                        return;
+                    }
+                    const cconPreface = cc.internal.parseCCONJson(json)//parseCCONJson(json);
+                    const chunkPromises = Promise.all(cconPreface.chunks.map((chunk) => new Promise < Uint8Array > ((resolve, reject) => {
+                        downloadArrayBuffer(`${/*path.*/mainFileName(url)}${chunk}`, {}, (errChunk, chunkBuffer) => {
+                            if (err) {
+                                reject(err);
+                            } else {
+                                resolve(new Uint8Array(chunkBuffer));
+                            }
+                        });
+                    })));
+                    chunkPromises.then((chunks) => {
+                        const ccon = new cc.internal.CCON(cconPreface.document, chunks);
+                        onComplete(null, ccon);
+                    }).catch((err) => {
+                        onComplete(err);
+                    });
+                });
+            };
 
+            const downloadCCONB = (url/*: string*/, options/*: IDownloadParseOptions*/, onComplete/*: CompleteCallback<CCON>*/) => {
+                downloadArrayBuffer(url, options, (err, arrayBuffer/*: ArrayBuffer*/) => {
+                    if (err) {
+                        onComplete(err);
+                        return;
+                    }
+                    try {
+                        const ccon = cc.internal.decodeCCONBinary(new Uint8Array(arrayBuffer))//decodeCCONBinary(new Uint8Array(arrayBuffer));
+                        onComplete(null, ccon);
+                    } catch (err) {
+                        onComplete(err);
+                    }
+                });
+            };
+
+            const mainFileName = (fileName/*: string*/) => {
+                if (fileName) {
+                    const idx = fileName.lastIndexOf('.');
+                    if (idx !== -1) {
+                        return fileName.substring(0, idx);
+                    }
+                }
+                return fileName;
+            }
+
+            class CCON {
+                constructor(document/*: unknown*/, chunks/*: Uint8Array[]*/) {
+                    this._document = document;
+                    this._chunks = chunks;
+                }
+
+                get document() {
+                    return this._document;
+                }
+
+                get chunks() {
+                    return this._chunks;
+                }
+
+                /*private*/
+                _document/*: unknown*/;
+                /*private*/
+                _chunks/*: Uint8Array[]*/;
+            }
+
+            const decodeJson = (data/*: Uint8Array*/) => {
+                if (typeof TextDecoder !== 'undefined') {
+                    return new TextDecoder().decode(data);
+                } else if ('Buffer' in globalThis) {
+                    const { Buffer } = (globalThis/* as unknown as { Buffer: BufferConstructor }*/);
+                    // eslint-disable-next-line no-buffer-constructor
+                    return Buffer.from(data.buffer, data.byteOffset, data.byteLength).toString();
+                } else {
+                    throw new Error("13104");
+                }
+            }
 
             let downloaders = {
                 // Images
@@ -368,6 +419,9 @@ function regLoading() {
                 '.ogg': downloadAudio,
                 '.wav': downloadAudio,
                 '.m4a': downloadAudio,
+
+                '.ccon': downloadCCON,
+                '.cconb': downloadCCONB,
 
                 // Binary
                 '.binary': downloadArrayBuffer,

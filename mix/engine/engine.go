@@ -2,12 +2,13 @@ package engine
 
 import (
 	"fmt"
-	"github.com/Jecced/go-tools/src/ak"
-	"github.com/Jecced/go-tools/src/fileutil"
-	"github.com/Jecced/go-tools/src/strutil"
 	"path"
 	"path/filepath"
 	"strings"
+
+	"github.com/Jecced/go-tools/src/ak"
+	"github.com/Jecced/go-tools/src/fileutil"
+	"github.com/Jecced/go-tools/src/strutil"
 )
 
 var (
@@ -69,7 +70,8 @@ func InsertRegisterJs(list []string, html *string, jsMap map[string]string, jsLi
 	for _, i2 := range list {
 		i2 = strings.Replace(i2, out+ak.PS, "", -1)
 		i2 = strings.Replace(i2, "\\", "/", -1)
-		insert(html, i2, jsMap)
+		pickUpName := pickUpJSFiles(i2)
+		insert(html, i2, pickUpName)
 	}
 	for _, i2 := range jsList {
 		i2 = strings.Replace(i2, out+ak.PS, "", -1)
@@ -78,16 +80,41 @@ func InsertRegisterJs(list []string, html *string, jsMap map[string]string, jsLi
 		content, _ := fileutil.ReadText(jsFile)
 		insert := "\n" + `<script>` + content + `</script>` + "\n"
 		strutil.InsertString(html, insert, "<!-- SCRIPT -->")
-		fmt.Println("file:", jsFile)
+		fmt.Println("libs file:", jsFile)
 	}
 }
 
-func insert(html *string, file string, jsMap map[string]string) {
+func pickUpJSFiles(file string) string {
+	if file == "application.js" {
+		return "application.js"
+	}
+	if file == "index.js" {
+		return "index.js"
+	}
+	if strings.Contains(file, "assets/main/index.js") || strings.Contains(file, "assets/resources/index.js") {
+		return file
+	}
+	if strings.Contains(file, "cocos-js") {
+		if strings.Contains(file, "cc.js") {
+			return "cc"
+		}
+		if strings.Contains(file, "wait-for-ammo-instantiation.js") {
+			return "wait-for-ammo-instantiation.js"
+		}
+		baseFile := path.Base(file)
+		return "./" + baseFile
+	}
+
+	return "./" + file
+}
+
+func insert(html *string, file string, pickUpName string) {
+	fmt.Printf("insert js file:%s\n", file)
 	jsFile := out + ak.PS + file
 	content, _ := fileutil.ReadText(jsFile)
 	st := strings.Index(content, "(")
 	if strings.Contains(file, "assets/main/index.js") || strings.Contains(file, "assets/resources/index.js") {
-		content = content[:st+1] /*+ "\"" + file + "\","*/ + content[st+1:]
+		// content = content[:st+1] /*+ "\"" + file + "\","*/ + content[st+1:]
 	} else {
 		/*slashJsPath := filepath.ToSlash(file)
 		//fileName := path.Base(slashJsPath)
@@ -95,7 +122,7 @@ func insert(html *string, file string, jsMap map[string]string) {
 		filesuffix := path.Ext(slashJsPath)
 		fileName := filenameall[0 : len(filenameall)-len(filesuffix)]
 		content = content[:st+1] + "\"" + fileName + "\"," + content[st+1:]*/
-		content = content[:st+1] + "\"" + file + "\"," + content[st+1:]
+		content = content[:st+1] + "\"" + pickUpName + "\"," + content[st+1:]
 	}
 	/*	for s := range jsMap {
 		var match = "./" + s
@@ -108,7 +135,7 @@ func insert(html *string, file string, jsMap map[string]string) {
 	}*/
 	insert := "\n" + `<script>` + content + `</script>` + "\n"
 	strutil.InsertString(html, insert, "<!-- SCRIPT -->")
-	fmt.Println("file:", jsFile)
+	fmt.Println("RegisterJs file:", jsFile)
 	//_ = os.Remove(jsFile)
 }
 
@@ -159,6 +186,6 @@ func ReplaceStyleBlock(html *string, script string) {
 		content,
 	)
 	*html = strings.Replace(*html, script, insert, -1)
-	fmt.Println("file:", path)
+	fmt.Println("style file:", path)
 	//os.Remove(path)
 }

@@ -7,15 +7,16 @@ import (
 	_ "embed"
 	"flag"
 	"fmt"
+	"os"
+	"path/filepath"
+
 	"github.com/Jecced/go-tools/src/ak"
 	_ "github.com/Jecced/go-tools/src/ak"
 	"github.com/Jecced/go-tools/src/fileutil"
-	"os"
-	"path/filepath"
 )
 
 var (
-	mobileDir  = "E:\\Projects\\CocosProjects\\WebGameDemo"
+	mobileDir  = "E:\\Projects\\Cocos\\Taxi"
 	outDir     = ""
 	htmlFile   = ""
 	tmpOutFile = ""
@@ -36,7 +37,7 @@ func main() {
 	htmlFile = outDir + ak.PS + "index.html"
 	tmpOutFile = outDir + ak.PS + "/index.html"
 	fileutil.ClearDir(outDir)
-	fmt.Println("文件夹拷贝", mobileDir, outDir)
+	fmt.Printf("copy project from:%s --->to:%s\n", mobileDir, outDir)
 	var err = fileutil.DirCopy(mobileDir, outDir)
 	if err != nil {
 		return

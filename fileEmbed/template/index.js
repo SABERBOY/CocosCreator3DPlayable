@@ -1,4 +1,4 @@
-System.register(["./application.js"], function (_export, _context) {
+System.register(["application.js"], function (_export, _context) {
   "use strict";
 
     var createApplication, canvas, $p, bcr;
@@ -10,6 +10,7 @@ System.register(["./application.js"], function (_export, _context) {
     }
 
     function fetchWasm(url) {
+        return url;
         // return fetch(url).then(function (response) {
         //   return response.arrayBuffer();
         // });
