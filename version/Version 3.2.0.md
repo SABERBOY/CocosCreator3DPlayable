@@ -11,7 +11,7 @@
 
 ```go
 var (
-mobileDir = "E:\\Projects\\CocosProjects\\WebGameDemo"
+mobileDir = "Cocos3D 项目路径"
 outDir = ""
 htmlFile = ""
 tmpOutFile = ""
@@ -22,7 +22,7 @@ tmpOutFile = ""
 
 #### 2.直接编译项目
 
-编译项目为可执行文件(当前命令仅限Windows)
+编译项目为可执行文件(当前命令仅限Windows，需要安装[Make](https://www.gnu.org/software/make/)工具集)
 
 ```shell
 make build
@@ -51,18 +51,20 @@ tmpHtml/index.html
 ### 1.引擎文件的升级
 
 查看
+
 ```shell
 mix/engine/engine.go
 ```
+
 (如果引擎文件的目录结构发生变化,需要修改该文件)
 
 ### 2.资源文件的升级
 
 查看
+
 ```shell
 mix/res/resource.go
 ```
-
 
 #### 1.文本处理(添加额外的文本后缀名处理,比如自定义的json格式)
 
@@ -74,20 +76,23 @@ text := []string{
 ```
 
 #### 2.二进制文件处理(添加额外的二进制后缀名处理,比如自定义的二进制格式)
+
 ```go
 bin := []string{
-		".bin",
-		".png",
-		".jpg",
-		".mp3",
-		".wasm",
-		".ttf",
-		".cconb",(3.3.1新添加的资源后缀)
-	}
+  ".bin",
+  ".png",
+  ".jpg",
+  ".mp3",
+  ".wasm",
+  ".ttf",
+  ".cconb"
+ }
 ```
 
 ### 3.JS加载资源
+
 该步骤是替换原始CocosCreator引擎加载资源的逻辑转换成自己的逻辑(大部分资源已经做对应处理,如果引擎升级添加了新的资源后缀,需要在该地方添加,只需要判断它是文件资源还是二进制资源)
+
 ```js
 let downloaders = {
                 // Images
