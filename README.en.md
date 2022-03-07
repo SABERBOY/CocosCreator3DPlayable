@@ -2,9 +2,16 @@
 
 ### [Modified based on this project](https://github.com/Jecced/c3d2one)
 
-### 再次感谢该大佬的项目
+### Thanks again for the big guy's project
 
-### --------------------------
+## README description
+
+-   [English](README.en.md)
+-   [Simplified Chinese](README.zh-CN.md)
+-   [traditional Chinese](README.zh-TW.md)
+-   [Hindi](README.hi.md)
+-   [French](README.fr.md)
+-   [Arab](README.ar.md)
 
 ### historic version
 
@@ -165,4 +172,4 @@ System.register([],(function(e,t){"use strict";return{execute:function(){
 
 # what must be done
 
-[wasm loading processing](./README.md#wasm加载文件处理)\|[WASM path incoming processing](./README.md#wasm路径传入处理)This operation is necessary, because the JavaScript fetch operation method is used, and only the engine source code can be forced to be modified (if wasm is not used, it can be ignored)
+[wasm加载处理](./README.md#wasm加载文件处理)\|[WASM路径传入处理](./README.md#wasm路径传入处理)This operation is necessary, because the JavaScript fetch operation method is used, and only the engine source code can be forced to be modified (if wasm is not used, it can be ignored)
