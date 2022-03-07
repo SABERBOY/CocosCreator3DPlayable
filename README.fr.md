@@ -165,4 +165,4 @@ System.register([],(function(e,t){"use strict";return{execute:function(){
 
 # ce qu'il faut faire
 
-[traitement de chargement wasm](./README.md#wasm加载文件处理)\|[Traitement entrant du chemin WASM](./README.md#wasm路径传入处理)Cette opération est nécessaire, car la méthode d'opération de récupération JavaScript est utilisée et le code source du moteur ne peut être modifié que de force (si wasm n'est pas utilisé, il peut être ignoré)
+[traitement de chargement wasm](./README.md#wasm加载文件处理)\|[Traitement entrant du chemin WASM](./README.md#wasm路径传入处理)Cette opération est nécessaire, car la méthode d'opération de récupération JavaScript est utilisée et seul le code source du moteur peut être forcé à être modifié (si wasm n'est pas utilisé, il peut être ignoré)
