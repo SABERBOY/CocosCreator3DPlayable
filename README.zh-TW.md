@@ -4,7 +4,14 @@
 
 ### 再次感謝該大佬的項目
 
-### --------------------------
+## README 說明
+
+-   [英語](README.en.md)
+-   [簡體中文](README.zh-CN.md)
+-   [繁體中文](README.zh-TW.md)
+-   [印地語](README.hi.md)
+-   [法語](README.fr.md)
+-   [阿拉伯](README.ar.md)
 
 ### 歷史版本
 
