@@ -4,7 +4,14 @@
 
 ### Merci encore pour le projet du grand gars
 
-### --------------------------
+## Description LISEZMOI
+
+-   [Anglais](README.en.md)
+-   [Chinois simplifié](README.zh-CN.md)
+-   [chinois traditionnel](README.zh-TW.md)
+-   [hindi](README.hi.md)
+-   [Française](README.fr.md)
+-   [arabe](README.ar.md)
 
 ### version historique
 
@@ -14,7 +21,7 @@
 
 ## Principe de fabrication
 
-### Parce que CocosCreator utilise la version 3d depuis[SystemJS](https://github.com/systemjs/systemjs)pour charger toutes les ressources de script, mais la façon dont SystemJS charge les scripts consiste à charger des scripts via des requêtes Web (peut-être que la méthode est erronée), mais la condition préalable à la production d'annonces jouables est qu'il n'est pas autorisé à charger des ressources via des requêtes réseau, toutes les ressources associées Il doit être dans le même fichier Html, donc la première version a été chargée en modifiant SystemJS, mais après de nombreux tests (une longue, longue période de test), j'ai trouvé des méthodes très ingénieuses, qui peuvent être faites sans modifier SystemJS.
+### 因为CocosCreator 从3d版本后就开始通过用[SystemJS](https://github.com/systemjs/systemjs)pour charger toutes les ressources de script, mais la façon dont SystemJS charge les scripts consiste à charger des scripts via des requêtes Web (peut-être que la méthode est erronée), mais la condition préalable à la production d'annonces jouables est qu'il n'est pas autorisé à charger des ressources via des requêtes réseau, toutes les ressources associées Il doit être dans le même fichier Html, donc la première version a été chargée en modifiant SystemJS, mais après de nombreux tests (une longue, longue période de test), j'ai trouvé des méthodes très ingénieuses, qui peuvent être faites sans modifier SystemJS.
 
 #### [System.register](https://github.com/systemjs/systemjs/blob/main/docs/system-register.md)
 
