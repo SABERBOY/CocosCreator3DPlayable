@@ -26,7 +26,17 @@ setup-protobuf-macos:
 run:
 	@go run main.go
 
+build-windows:
+	@SET CGO_ENABLED=0&&SET GOOS=windows&&SET GOARCH=amd64&&go build -o ./out/windows/$(BINARY_NAME).exe main.go
+  	# @CGO_ENABLED=0&&GOOS=darwin&&GOARCH=amd64&&go build -o ./out/windows/$(BINARY_NAME).exe main.go
+
+build-darwin:
+	@SET CGO_ENABLED=0&&SET GOOS=darwin&&SET GOARCH=amd64&&go build -o ./out/darwin/$(BINARY_NAME) main.go
+
+build-linux:
+	@SET CGO_ENABLED=0&&SET GOOS=linux&&SET GOARCH=amd64&&go build -o ./out/linux/$(BINARY_NAME) main.go
+
 build:
-	@SET CGO_ENABLED=0&&SET GOOS=windows&&SET GOARCH=amd64&&go build -o $(BINARY_NAME).exe main.go
-	@echo $(detected_OS)
-  	@CGO_ENABLED=0&&GOOS=darwin&&GOARCH=amd64&&go build -o $(BINARY_NAME).exe main.go
+	@make build-windows
+	@make build-darwin
+	@make build-linux
