@@ -4,7 +4,14 @@
 
 ### 再次感谢该大佬的项目
 
-### --------------------------
+## README 说明
+
+- [English](README.en.md)
+- [简体中文](README.zh-CN.md)
+- [繁体中文](README.zh-TW.md)
+- [हिंदी](README.hi.md)
+- [Française](README.fr.md)
+- [عربى](README.ar.md)
 
 ### 历史版本
 
