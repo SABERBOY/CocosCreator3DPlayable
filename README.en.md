@@ -25,7 +25,7 @@
 
 #### [System.register](https://github.com/systemjs/systemjs/blob/main/docs/system-register.md)
 
-After CocosCreator3D exports the mobile web project, many system-related scripts have the following characteristics. The first array of scripts registered by SystemJS contains dependencies, which represent those modules that depend on them, and the dependent modules will be loaded first.
+After CocosCreator3D exports a mobile web project, many system-related scripts have the following characteristics. The first array of scripts registered by SystemJS contains dependencies, which represent those modules that depend on them, and the dependent modules will be loaded first.
 
 ```javascript
 System.register(['dependency'], function (_export, _context) {
@@ -136,6 +136,8 @@ WebAssembly.instantiate()
 
 As shown in the figure, you will find that the fetch method is used in the script, which is not allowed by PlayableAD, so you can only change the corresponding fetch method and replace it as follows (the path address comes from[WASM path incoming processing](./README.md#wasm路径传入处理))
 
+Need to pay attention to the following cases (very important) where the marked place needs to be the same as in fetch, because each compilation will change the corresponding variable name![](./pic/Snipaste_2022-04-01_13-48-28.jpg)
+
 ```javascript
 let url = "cocos-js/" + (e)
 let wa = base64DecToArr(window.res[url])
@@ -172,4 +174,4 @@ System.register([],(function(e,t){"use strict";return{execute:function(){
 
 # what must be done
 
-[wasm加载处理](./README.md#wasm加载文件处理)\|[WASM路径传入处理](./README.md#wasm路径传入处理)This operation is necessary, because the JavaScript fetch operation method is used, and only the engine source code can be forced to be modified (if wasm is not used, it can be ignored)
+[wasm loading processing](./README.md#wasm加载文件处理)\|[WASM path incoming processing](./README.md#wasm路径传入处理)This operation is necessary, because the JavaScript fetch operation method is used, and only the engine source code can be forced to be modified (if wasm is not used, it can be ignored)
