@@ -136,6 +136,8 @@ WebAssembly.instantiate()
 
 如圖，你會發現該腳本里面使用了fetch方法，這是PlayableAD 不允許的，所以只能更改對應fetch方法，替換如下(路徑地址來自[WASM路徑傳入處理](./README.md#wasm路径传入处理))
 
+需要注意以下情況（很重要）其中標記的地方需要跟fetch中的一樣，因為每次編譯會改變對應變量命名![](./pic/Snipaste_2022-04-01_13-48-28.jpg)
+
 ```javascript
 let url = "cocos-js/" + (e)
 let wa = base64DecToArr(window.res[url])
@@ -172,4 +174,4 @@ System.register([],(function(e,t){"use strict";return{execute:function(){
 
 # 必須要執行的操作
 
-[wasm加載處理](./README.md#wasm加载文件处理)\|[WASM路徑傳入處理](./README.md#wasm路径传入处理)該操作是必須的，因為用到了JavaScript fetch操作方法，只能強制修改引擎源碼（如果沒有使用wasm可以忽略）
+[wasm加載處理](./README.md#wasm加载文件处理)\|[WASM路径传入处理](./README.md#wasm路径传入处理)該操作是必須的，因為用到了JavaScript fetch操作方法，只能強制修改引擎源碼（如果沒有使用wasm可以忽略）
