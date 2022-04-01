@@ -128,14 +128,15 @@ System.register('./PPY.js'，[], function (_export, _context) {
 ## WASM加载文件处理
 
 由于可能需要物理引擎模块，当然也可能会选择WASM模块，这种情况就需要魔改一丢丢引擎源码（打开“项目目录/build/web-mobile/cocos-js/instantiated-\*\*.js”类似这个文件）
-查找关键字段
-![](./pic/Snipaste_2022-03-06_19-31-09.jpg)
+查找关键字段![](./pic/Snipaste_2022-03-06_19-31-09.jpg)
 
 ```javascript
 WebAssembly.instantiate()
 ```
 
 如图，你会发现该脚本里面使用了fetch方法，这是PlayableAD 不允许的，所以只能更改对应fetch方法，替换如下(路径地址来自[WASM路径传入处理](./README.md#wasm路径传入处理))
+
+需要注意以下情况（很重要）其中标记的地方需要跟fetch中的一样，因为每次编译会改变对应变量命名![](./pic/Snipaste_2022-04-01_13-48-28.jpg)
 
 ```javascript
 let url = "cocos-js/" + (e)
