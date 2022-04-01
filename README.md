@@ -137,6 +137,9 @@ WebAssembly.instantiate()
 
 如图，你会发现该脚本里面使用了fetch方法，这是PlayableAD 不允许的，所以只能更改对应fetch方法，替换如下(路径地址来自[WASM路径传入处理](./README.md#wasm路径传入处理))
 
+需要注意以下情况（很重要）其中标记的地方需要跟fetch中的一样，因为每次编译会改变对应变量命名
+![](./pic/Snipaste_2022-04-01_13-48-28.jpg)
+
 ```javascript
 let url = "cocos-js/" + (e)
 let wa = base64DecToArr(window.res[url])
