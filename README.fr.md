@@ -21,11 +21,11 @@
 
 ## Principe de fabrication
 
-### 因为CocosCreator 从3d版本后就开始通过用[SystemJS](https://github.com/systemjs/systemjs)pour charger toutes les ressources de script, mais la façon dont SystemJS charge les scripts consiste à charger des scripts via des requêtes Web (peut-être que la méthode est erronée), mais la condition préalable à la production d'annonces jouables est qu'il n'est pas autorisé à charger des ressources via des requêtes réseau, toutes les ressources associées Il doit être dans le même fichier Html, donc la première version a été chargée en modifiant SystemJS, mais après de nombreux tests (une longue, longue période de test), j'ai trouvé des méthodes très ingénieuses, qui peuvent être faites sans modifier SystemJS.
+### Parce que CocosCreator utilise la version 3d depuis[SystemJS](https://github.com/systemjs/systemjs)pour charger toutes les ressources de script, mais la façon dont SystemJS charge les scripts consiste à charger des scripts via des requêtes Web (peut-être que la méthode est erronée), mais la condition préalable à la production d'annonces jouables est qu'il n'est pas autorisé à charger des ressources via des requêtes réseau, toutes les ressources associées Il doit être dans le même fichier Html, donc la première version a été chargée en modifiant SystemJS, mais après de nombreux tests (très, très longtemps), j'ai trouvé des méthodes très ingénieuses, qui peuvent être faites sans modifier SystemJS.
 
 #### [System.register](https://github.com/systemjs/systemjs/blob/main/docs/system-register.md)
 
-Une fois que CocosCreator3D a exporté un projet Web mobile, de nombreux scripts liés au système présentent les caractéristiques suivantes : le premier tableau de scripts enregistrés par SystemJS contient des dépendances, qui représentent les modules qui en dépendent, et les modules dépendants seront chargés en premier.
+Une fois que CocosCreator3D a exporté le projet Web mobile, de nombreux scripts liés au système présentent les caractéristiques suivantes : le premier tableau de scripts enregistrés par SystemJS contient des dépendances, qui représentent les modules qui en dépendent, et les modules dépendants seront chargés en premier.
 
 ```javascript
 System.register(['dependency'], function (_export, _context) {
@@ -136,6 +136,8 @@ WebAssembly.instantiate()
 
 Comme le montre la figure, vous constaterez que la méthode de récupération est utilisée dans le script, ce qui n'est pas autorisé par PlayableAD, vous ne pouvez donc modifier que la méthode de récupération correspondante et la remplacer comme suit (l'adresse du chemin provient de[Traitement entrant du chemin WASM](./README.md#wasm路径传入处理))
 
+Il faut faire attention aux cas suivants (très importants) où l'endroit marqué doit être le même que dans fetch, car chaque compilation changera le nom de la variable correspondante![](./pic/Snipaste_2022-04-01_13-48-28.jpg)
+
 ```javascript
 let url = "cocos-js/" + (e)
 let wa = base64DecToArr(window.res[url])
@@ -151,7 +153,7 @@ Ce script obtient le chemin de la ressource wasm entrante, toutes les ressources
 
 ## Traitement entrant du chemin WASM
 
-Ouvrez "répertoire du projet/build/web-mobile/cocos-js/bullet.wasm-\*\*\*\*.js" similaire à ce fichier
+打开“项目目录/build/web-mobile/cocos-js/bullet.wasm-\*\*\*\*.js”类似这个文件
 
 ```javascript
 System.register([],(function(e,t){"use strict";return{execute:function(){
