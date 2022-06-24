@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"path"
 	"path/filepath"
+	"regexp"
 	"strings"
 
 	"github.com/Jecced/go-tools/src/ak"
@@ -34,6 +35,7 @@ func Mix(dir string, html *string) {
 			}
 		}
 	}
+	FixWasm(jsMap)
 	InsertRegisterJs(register, content, jsMap, noJsList)
 	InsertImportMap(content)
 	FindAndMixScript(content)
@@ -64,6 +66,28 @@ func GetAllSystemRegister(dir string) ([]string, []string) {
 		}
 	}
 	return out, outNoSys
+}
+
+// WASM处理
+func FixWasm(jsMap map[string]string) {
+	for s := range jsMap {
+		if strings.Contains(s, "instantiated") {
+			content, _ := fileutil.ReadBytes(jsMap[s])
+			pat := `fetch\(e\).+assign\(([A-Z]+),n\),t\(\)\}\),n\)\}\(e\)\}\),n\)\}\),n\)`
+			re := regexp.MustCompile(pat)
+			data := re.ReplaceAll(content, []byte(`let url="cocos-js/"+(e);let wa=base64DecToArr(window.res[url]);WebAssembly.instantiate(wa,o).then((function(e){var n=e.instance.exports;Object.assign($1,n),t()}),n)`))
+			fileutil.WriteData(data, jsMap[s])
+		}
+
+		if strings.Contains(s, "bullet.wasm") {
+			content, _ := fileutil.ReadBytes(jsMap[s])
+			pat := `new URL\((".+"),t\.meta\.url\)\.href`
+			re := regexp.MustCompile(pat)
+			data := re.ReplaceAll(content, []byte("$1"))
+			fmt.Println("bullet.wasm:", string(data))
+			fileutil.WriteData(data, jsMap[s])
+		}
+	}
 }
 
 func InsertRegisterJs(list []string, html *string, jsMap map[string]string, jsList []string) {
