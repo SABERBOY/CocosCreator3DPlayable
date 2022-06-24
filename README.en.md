@@ -2,15 +2,15 @@
 
 ### [Modified based on this project](https://github.com/Jecced/c3d2one)
 
-### Thanks again for the big guy's project
+### 再次感谢该大佬的项目
 
 ## README description
 
 -   [English](README.en.md)
 -   [Simplified Chinese](README.zh-CN.md)
 -   [traditional Chinese](README.zh-TW.md)
--   [Hindi](README.hi.md)
--   [French](README.fr.md)
+-   [हिंदी](README.hi.md)
+-   [Française](README.fr.md)
 -   [Arab](README.ar.md)
 
 ### historic version
@@ -19,13 +19,13 @@
 
 ## [CocosCreator3D 3.4.1](./version/Version%203.4.1.md)
 
-## Production principle
+## 制作原理
 
-### Because CocosCreator has been using the 3d version since[SystemJS](https://github.com/systemjs/systemjs)to load all script resources, but the way SystemJS loads scripts is to load scripts through web requests (maybe the method is wrong), but the prerequisite for Playable ad production is that it is not allowed to load resources through network requests, all related resources It must be in the same Html file, so the early version was loaded by modifying SystemJS, but after many tests (a long, long period of testing), I found some very ingenious methods, which can be done without modifying SystemJS.
+### Because CocosCreator has been using the 3d version since[SystemJS](https://github.com/systemjs/systemjs)to load all script resources, but the way SystemJS loads scripts is to load scripts through web requests (maybe the method is wrong), but the prerequisite for Playable ad production is that it is not allowed to load resources through network requests, all related resources It must be in the same Html file, so the early version was loaded by modifying SystemJS, but after many tests (a long, long time), I found some very ingenious methods, which can be done without modifying SystemJS.
 
 #### [System.register](https://github.com/systemjs/systemjs/blob/main/docs/system-register.md)
 
-After CocosCreator3D exports a mobile web project, many system-related scripts have the following characteristics. The first array of scripts registered by SystemJS contains dependencies, which represent those modules that depend on them, and the dependent modules will be loaded first.
+After CocosCreator3D exports the mobile web project, many system-related scripts have the following characteristics. The first array of scripts registered by SystemJS contains dependencies, which represent those modules that depend on them, and the dependent modules will be loaded first.
 
 ```javascript
 System.register(['dependency'], function (_export, _context) {
