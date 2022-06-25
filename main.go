@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"regexp"
 
 	"github.com/Jecced/go-tools/src/ak"
 	_ "github.com/Jecced/go-tools/src/ak"
@@ -42,26 +43,26 @@ func main() {
 	if err != nil {
 		return
 	}
-	index, err := fileEmbed.Template.ReadFile("template/index.js")
+
+	indexhtml, err := fileutil.ReadBytes(outDir + ak.PS + "index.html")
 	if err != nil {
+		fmt.Printf("read index.html error:%s\n", err)
 		return
 	}
-	fileutil.WriteData(index, outDir+ak.PS+"index.js")
-	indexhtml, err := fileEmbed.Template.ReadFile("template/index.html")
-	if err != nil {
-		return
-	}
+	pat := `.+Import map(.*\n)*.*index\.js`
+	re := regexp.MustCompile(pat)
+	indexhtml = re.ReplaceAll(indexhtml, []byte(`<!-- RESOURCE -->
+
+	<!-- SCRIPT -->
+	
+	<!-- JSON IMPORT-MAP -->
+	
+	<!-- new-res-loader.js -->
+	<script src="new-res-loader.js" charset="utf-8"></script>
+	
+	<script>
+		 System.import('index.js`))
 	fileutil.WriteData(indexhtml, outDir+ak.PS+"index.html")
-	application, err := fileEmbed.Template.ReadFile("template/application.js")
-	if err != nil {
-		return
-	}
-	fileutil.WriteData(application, outDir+ak.PS+"application.js")
-	systembundle, err := fileEmbed.Template.ReadFile("template/src/system.bundle.js")
-	if err != nil {
-		return
-	}
-	fileutil.WriteData(systembundle, outDir+ak.PS+"src/system.bundle.js")
 
 	plugin, err := fileEmbed.Plugin.ReadFile("plugin/new-res-loader.js")
 	if err != nil {
