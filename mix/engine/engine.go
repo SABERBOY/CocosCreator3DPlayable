@@ -35,7 +35,7 @@ func Mix(dir string, html *string) {
 			}
 		}
 	}
-	FixWasm(jsMap)
+	FixJs(jsMap)
 	InsertRegisterJs(register, content, jsMap, noJsList)
 	InsertImportMap(content)
 	FindAndMixScript(content)
@@ -68,9 +68,49 @@ func GetAllSystemRegister(dir string) ([]string, []string) {
 	return out, outNoSys
 }
 
-// WASM处理
-func FixWasm(jsMap map[string]string) {
+// 修改js文件
+func FixJs(jsMap map[string]string) {
 	for s := range jsMap {
+
+		if s == "index.js" {
+			content, _ := fileutil.ReadBytes(jsMap[s])
+
+			pat := `var err;(.*\n)*.*appendChild\(script\)`
+			re := regexp.MustCompile(pat)
+			data := re.ReplaceAll(content, []byte("resolve()"))
+
+			pat = `\.\/(application.js)`
+			re = regexp.MustCompile(pat)
+			data = re.ReplaceAll(data, []byte("$1"))
+
+			fileutil.WriteData(data, jsMap[s])
+		}
+
+		if s == "application.js" {
+			content, _ := fileutil.ReadBytes(jsMap[s])
+
+			pat := `var requestSettings(.*\n)*.*requestSettings\(\);`
+			re := regexp.MustCompile(pat)
+			data := re.ReplaceAll(content, []byte(`if (settings.startsWith("./")) {
+            settings = settings.substring(2);
+          }
+          window._CCSettings = window.res[settings];
+          resolve();`))
+
+			pat = `(wait-for-ammo-instantiation)`
+			re = regexp.MustCompile(pat)
+			data = re.ReplaceAll(data, []byte("$1.js"))
+
+			pat = `(return topLevelImport.+cc.+\n.*?\))`
+			re = regexp.MustCompile(pat)
+			data = re.ReplaceAll(data, []byte(`$1.then(function (engine) {
+				cc = engine;
+				return regLoading();
+				})`))
+
+			fileutil.WriteData(data, jsMap[s])
+		}
+
 		if strings.Contains(s, "instantiated") {
 			content, _ := fileutil.ReadBytes(jsMap[s])
 			pat := `fetch\(e\).+assign\(([A-Z]+),n\),t\(\)\}\),n\)\}\(e\)\}\),n\)\}\),n\)`
@@ -84,7 +124,6 @@ func FixWasm(jsMap map[string]string) {
 			pat := `new URL\((".+"),t\.meta\.url\)\.href`
 			re := regexp.MustCompile(pat)
 			data := re.ReplaceAll(content, []byte("$1"))
-			fmt.Println("bullet.wasm:", string(data))
 			fileutil.WriteData(data, jsMap[s])
 		}
 	}
