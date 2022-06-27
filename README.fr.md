@@ -21,7 +21,7 @@
 
 ## Principe de fabrication
 
-### Parce que CocosCreator utilise la version 3d depuis[SystemJS](https://github.com/systemjs/systemjs)pour charger toutes les ressources de script, mais la façon dont SystemJS charge les scripts consiste à charger des scripts via des requêtes Web (peut-être que la méthode est erronée), mais la condition préalable à la production d'annonces jouables est qu'il n'est pas autorisé à charger des ressources via des requêtes réseau, toutes les ressources associées Il doit être dans le même fichier Html, donc la première version a été chargée en modifiant SystemJS, mais après de nombreux tests (une longue, longue période de test), j'ai trouvé des méthodes très ingénieuses, qui peuvent être faites sans modifier SystemJS.
+### Parce que CocosCreator utilise la version 3d depuis[SystemJS](https://github.com/systemjs/systemjs)pour charger toutes les ressources de script, mais la façon dont SystemJS charge les scripts consiste à charger des scripts via des requêtes Web (peut-être que la méthode est erronée), mais la condition préalable à la production d'annonces jouables est qu'il n'est pas autorisé à charger des ressources via des requêtes réseau, toutes les ressources associées Il doit être dans le même fichier Html, donc la première version a été chargée en modifiant SystemJS, mais après de nombreux tests (très, très longtemps), j'ai trouvé des méthodes très ingénieuses, qui peuvent être faites sans modifier SystemJS.
 
 #### [System.register](https://github.com/systemjs/systemjs/blob/main/docs/system-register.md)
 
@@ -153,7 +153,7 @@ Ce script obtient le chemin de la ressource wasm entrante, toutes les ressources
 
 ## Traitement entrant du chemin WASM
 
-打开“项目目录/build/web-mobile/cocos-js/bullet.wasm-\*\*\*\*.js”类似这个文件
+Ouvrez "répertoire du projet/build/web-mobile/cocos-js/bullet.wasm-\*\*\*\*.js" similaire à ce fichier
 
 ```javascript
 System.register([],(function(e,t){"use strict";return{execute:function(){
