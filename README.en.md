@@ -2,14 +2,14 @@
 
 ### [Modified based on this project](https://github.com/Jecced/c3d2one)
 
-### 再次感谢该大佬的项目
+### Thanks again for the big guy's project
 
 ## README description
 
 -   [English](README.en.md)
 -   [Simplified Chinese](README.zh-CN.md)
 -   [traditional Chinese](README.zh-TW.md)
--   [हिंदी](README.hi.md)
+-   [Hindi](README.hi.md)
 -   [Française](README.fr.md)
 -   [Arab](README.ar.md)
 
@@ -19,13 +19,13 @@
 
 ## [CocosCreator3D 3.4.1](./version/Version%203.4.1.md)
 
-## 制作原理
+## Production principle
 
 ### Because CocosCreator has been using the 3d version since[SystemJS](https://github.com/systemjs/systemjs)to load all script resources, but the way SystemJS loads scripts is to load scripts through web requests (maybe the method is wrong), but the prerequisite for Playable ad production is that it is not allowed to load resources through network requests, all related resources It must be in the same Html file, so the early version was loaded by modifying SystemJS, but after many tests (a long, long time), I found some very ingenious methods, which can be done without modifying SystemJS.
 
 #### [System.register](https://github.com/systemjs/systemjs/blob/main/docs/system-register.md)
 
-After CocosCreator3D exports the mobile web project, many system-related scripts have the following characteristics. The first array of scripts registered by SystemJS contains dependencies, which represent those modules that depend on them, and the dependent modules will be loaded first.
+After CocosCreator3D exports a mobile web project, many system-related scripts have the following characteristics. The first array of scripts registered by SystemJS contains dependencies, which represent those modules that depend on them, and the dependent modules will be loaded first.
 
 ```javascript
 System.register(['dependency'], function (_export, _context) {
@@ -149,7 +149,7 @@ WebAssembly.instantiate(wa, o).then((function (e) {
 ), n) 
 ```
 
-This script gets the path of the incoming wasm resource, all text resources and binary resources exist in window.res
+该段脚本获取传入的wasm资源的路径，所有的文本资源与二进制资源全部存在于window.res中
 
 ## WASM path incoming processing
 
