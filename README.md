@@ -1,181 +1,73 @@
-# CocosCreator3D PlayableAD
+# CocosCreator3DPlayable
 
-### [基于该项目修改](https://github.com/Jecced/c3d2one)
+把 Cocos Creator 3.x 导出的 `web-mobile` 目录打包成一个可投放的 playable-ad HTML 文件。
 
-### 再次感谢该大佬的项目
+## 安装和运行
 
-## README 说明
-
-- [English](README.en.md)
-- [简体中文](README.zh-CN.md)
-- [繁体中文](README.zh-TW.md)
-- [हिंदी](README.hi.md)
-- [Française](README.fr.md)
-- [عربى](README.ar.md)
-
-### 历史版本
-
-## [CocosCreator3D 3.2.0](./version/Version%203.2.0.md)
-
-## [CocosCreator3D 3.4.1](./version/Version%203.4.1.md)
-
-## 制作原理
-
-### 因为CocosCreator 从3d版本后就开始通过用[SystemJS](https://github.com/systemjs/systemjs)来加载所有的脚本资源，但是SystemJS加载脚本的方式是通过web请求方式（可能方法说得不对）来加载脚本，但是Playable广告制作的前提条件就是不允许通过网络请求来加载资源，所有有关的资源必须要在同一个Html文件里面，所以早期版本是通过魔改SystemJS来加载，但是经过多方面测试（很久很久的测试），发现一些很巧妙的方法，可以不魔改SystemJS就可行
-
-#### [System.register](https://github.com/systemjs/systemjs/blob/main/docs/system-register.md)
-
-CocosCreator3D 导出手机web项目后，里面很多系统有关的脚本都有以下特征，SystemJS注册的脚本，第一个数组里面是依赖项，代表依赖那些模块，会优先加载依赖模块
-
-```javascript
-System.register(['dependency'], function (_export, _context) {
-  var dep;
-  return {
-    setters: [function (_dep) {
-      dep = _dep;
-    }],
-    execute: function () {
-      _export({
-        name: 'value'
-      });
-    }
-  };
-});
+```powershell
+go run ./cmd/cocos-playable pack `
+  --input "C:\path\to\project\build\web-mobile" `
+  --output "C:\path\to\playable.html"
 ```
 
-然后System.register方法的第一个参数可以传入string，这个我称之为别名，通常是js文件的名称加上对应路径，因为有很多相同文件名的js文件，这些会做一些对应处理，像下面这样，比如该js文件为PPS.js,可以修改如下：
+覆盖已有文件时显式加 `--force`：
 
-```javascript
-System.register('./PPS.js'，['./PPY.js'], function (_export, _context) {
-  var dep;
-  return {
-    setters: [function (_dep) {
-      dep = _dep;
-    }],
-    execute: function () {
-      _export({
-        name: 'value'
-      });
-    }
-  };
-});
+```powershell
+go run ./cmd/cocos-playable pack --input build/web-mobile --output dist/playable.html --force
 ```
 
-以上表示PPS.js在加载的时候会优先加载PPY.js文件，然后再加载PPS.js,
-下面是PPYjs文件,
+压缩输出：
 
-```javascript
-System.register('./PPY.js'，[], function (_export, _context) {
-  var dep;
-  return {
-    setters: [function (_dep) {
-      dep = _dep;
-    }],
-    execute: function () {
-      _export({
-        name: 'value'
-      });
-    }
-  };
-});
+```powershell
+go run ./cmd/cocos-playable pack --input build/web-mobile --output dist/playable.html --minify
 ```
 
-然后把PPY.js,PPS.js注入到Html文件中，类似如下
+构建可执行文件：
 
-```html
-
-<script>
-  System.register('./PPS.js'，['./PPY.js'], function (_export, _context) {
-  var dep;
-  return {
-    setters: [function (_dep) {
-      dep = _dep;
-    }],
-    execute: function () {
-      _export({
-        name: 'value'
-      });
-    }
-  };
-});
-</script>
-<script>
-   System.register('./PPY.js'，[], function (_export, _context) {
-  var dep;
-  return {
-    setters: [function (_dep) {
-      dep = _dep;
-    }],
-    execute: function () {
-      _export({
-        name: 'value'
-      });
-    }
-  };
-});
-</script>
-<script>
-   System.import('./PPS.js').catch(function (err) {
-        console.error(err);
-    })
-</script>
+```powershell
+go build -o out/cocos-playable.exe ./cmd/cocos-playable
 ```
 
-（如果想正常运行示例，前提是注入SystemJS模块，否则无法正常运行）最下方的代码会成功执行
+## 当前行为
 
-以上是简单的示例，该工程就是通过该方法做了大量对应处理，然后生成单个Html文件的
+- 输入必须直接指向 Cocos Creator 导出的 `web-mobile` 目录。
+- 输出是一个单独的 HTML 文件，不再使用旧的 `-path` 和 `build/PS/index.html` 契约。
+- 不复制项目目录，不递归清空输出目录，只写用户指定的输出文件。
+- 默认拒绝 `../`、绝对路径、外部 URL 和 symlink 资源引用，防止打包时读取输入目录外的文件。
+- JSON 和 CCON 资源会校验为合法 JSON；文本和二进制资源会安全序列化进 `window.res`。
+- 生成脚本会转义 `<`、`>`、`&`、U+2028、U+2029、`</script>` 和 `</style>` 相关上下文，避免资源内容破坏 HTML 结构。
 
-## WASM加载文件处理
+## Cocos 3.x 适配策略
 
-由于可能需要物理引擎模块，当然也可能会选择WASM模块，这种情况就需要魔改一丢丢引擎源码（打开“项目目录/build/web-mobile/cocos-js/instantiated-**.js”类似这个文件）
-查找关键字段
-![](./pic/Snipaste_2022-03-06_19-31-09.jpg)
+打包器按规则处理 Cocos 3.x 常见导出结构：
 
-```javascript
-WebAssembly.instantiate()
+- 给匿名 `System.register(...)` 模块补充稳定模块名。
+- 内联 `script src` 和 stylesheet 链接。
+- 将 `src/import-map.json`、文本资源和二进制资源放入 `window.res`。
+- 注入 playable 资源加载器，注册图片、JSON、文本、音频、字体、WASM、CCON/CCONB 等 downloader。
+- 对 `index.js`、`application.js`、WASM 初始化和 bullet WASM 路径做兼容转换。
+
+如果新的 Cocos 3.x 导出结构导致转换规则没有命中，命令会输出 warning。把真实导出裁剪成 fixture 后放进 `testdata/cocos3x/`，再增加回归测试。
+
+## 验证
+
+```powershell
+go test ./...
+go test -race ./...
+go vet ./...
+go build ./...
+go run golang.org/x/vuln/cmd/govulncheck@latest ./...
 ```
 
-如图，你会发现该脚本里面使用了fetch方法，这是PlayableAD 不允许的，所以只能更改对应fetch方法，替换如下(路径地址来自[WASM路径传入处理](./README.md#wasm路径传入处理))
+CI 使用 Go 1.25.11 运行 build、test、race、vet 和 govulncheck。
 
-需要注意以下情况（很重要）其中标记的地方需要跟fetch中的一样，因为每次编译会改变对应变量命名
-![](./pic/Snipaste_2022-04-01_13-48-28.jpg)
+## 安全说明
 
-```javascript
-let url = "cocos-js/" + (e)
-let wa = base64DecToArr(window.res[url])
-WebAssembly.instantiate(wa, o).then((function (e) {
-    var n = e.instance.exports;
-    Object.assign(qJ, n),
-        t()
-}
-), n) 
-```
+这个工具处理本地文件系统和会发布到广告环境的 HTML，因此输入目录应来自可信的 Cocos 构建链。当前实现仍按安全默认值处理半可信输入：
 
-该段脚本获取传入的wasm资源的路径，所有的文本资源与二进制资源全部存在于window.res中
+- 所有 HTML 引用资源都必须解析在输入目录内。
+- symlink 默认跳过或拒绝。
+- 输出文件使用同目录临时文件写入，再原子 rename。
+- 未加 `--force` 时不会覆盖已有输出。
 
-## WASM路径传入处理
-
-打开“项目目录/build/web-mobile/cocos-js/bullet.wasm-****.js”类似这个文件
-
-```javascript
-System.register([],(function(e,t){"use strict";return{execute:function(){
-  e("default",new URL("assets/bullet.wasm-c98527b6.wasm",t.meta.url).href)}
-  }}));
-
-```
-
-替换‘new URL()’整个参数为’assets/bullet.wasm-c98527b6.wasm‘，很不错，wasm文件的名称在CocosCreator3D 3.4.1版本的名称在打包的时候应该不会改变（如果有修改，请替换为正确的文件名称）
-如下：
-
-```javascript
-System.register([],(function(e,t){"use strict";return{execute:function(){
-    e("default","assets/bullet.wasm-c98527b6.wasm")
-}}}));
-
-```
-
-# 必须要执行的操作
-
-[wasm加载处理](./README.md#wasm加载文件处理)  |
-[WASM路径传入处理](./README.md#wasm路径传入处理)
-该操作是必须的，因为用到了JavaScript fetch操作方法，只能强制修改引擎源码（如果没有使用wasm可以忽略）
+历史版本说明保留在 `version/` 下，仅用于理解旧方案和 Cocos 3.2/3.4 的背景；旧文档里的 `-path` 用法已经废弃。

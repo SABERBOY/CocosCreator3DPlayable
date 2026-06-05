@@ -1,5 +1,7 @@
 ## CocosCreator3D(v3.2.0) 试玩广告制作流程
 
+> 注意：本文是旧实现的历史说明。当前 CLI 已改为 `cocos-playable pack --input <web-mobile-dir> --output <playable.html>`，旧 `-path` 和 `build/PS/index.html` 用法已经废弃。
+
 ### 模块裁剪
 
 默认勾选所有的选项,3D物理系统勾选bullet物理,2d勾选Box2D(去除其他则需要修改部分代码)
