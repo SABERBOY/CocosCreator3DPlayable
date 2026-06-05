@@ -1,4 +1,4 @@
-# CocosCreator3D PlayableAD
+# CocosCreator3D 可玩AD
 
 ### [基于该项目修改](https://github.com/Jecced/c3d2one)
 
@@ -23,7 +23,7 @@
 
 ### 因为CocosCreator 从3d版本后就开始通过用[系统JS](https://github.com/systemjs/systemjs)来加载所有的脚本资源，但是SystemJS加载脚本的方式是通过web请求方式（可能方法说得不对）来加载脚本，但是Playable广告制作的前提条件就是不允许通过网络请求来加载资源，所有有关的资源必须要在同一个Html文件里面，所以早期版本是通过魔改SystemJS来加载，但是经过多方面测试（很久很久的测试），发现一些很巧妙的方法，可以不魔改SystemJS就可行
 
-#### [系统注册](https://github.com/systemjs/systemjs/blob/main/docs/system-register.md)
+#### [系统寄存器](https://github.com/systemjs/systemjs/blob/main/docs/system-register.md)
 
 CocosCreator3D 导出手机web项目后，里面很多系统有关的脚本都有以下特征，SystemJS注册的脚本，第一个数组里面是依赖项，代表依赖那些模块，会优先加载依赖模块
 
